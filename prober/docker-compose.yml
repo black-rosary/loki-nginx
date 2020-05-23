@@ -1,0 +1,47 @@
+version: "3.7"
+services:
+  backyard:
+    container_name: backyard.prober
+    build: ./backyard
+    expose:
+      - 8080
+    environment:
+      - VIRTUAL_HOST=nginx.test
+      - NETWORK_ACCESS=internal
+      - VIRTUAL_PORT=8080
+    networks:
+      prober.net:
+    depends_on:
+      - proxy
+  client:
+    container_name: client.prober
+    build: ./prober
+    depends_on:
+      - proxy
+    networks:
+      prober.net:
+  proxy:
+    build:
+      context: ./proxy/src
+    ports:
+      - "80:80"
+      - "443:443"
+    container_name: proxy.prober
+    image: jwilder/nginx-proxy:alpine
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./proxy/certs:/etc/nginx/certs
+      - ./proxy/vhost.d:/etc/nginx/vhost.d
+      - ./proxy/html:/usr/share/nginx/html
+    networks:
+      prober.net:
+        aliases:
+          - nginx.test
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
+        tag: "{{.ImageName}}|{{.Name}}"
+networks:
+  prober.net:

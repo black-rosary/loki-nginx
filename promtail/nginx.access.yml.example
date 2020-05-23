@@ -1,0 +1,58 @@
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+  log_level: "debug"
+positions:
+  filename: /var/lib/promtail/postions/positions.yaml
+client:
+  url: http://loki:3100/api/prom/push
+scrape_configs:
+  - job_name: nginx
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          host: localhost # where from
+          app: nginx # application
+          source: nginx.log # source
+          source_type: nginx.access.log # type of source
+          request_type: unknown
+          __path__: /var/log/nginx/*.access.log
+    pipeline_stages:
+      - match:
+          selector: '{app="nginx"}'
+          stages:
+            - regex:
+                source: filename # filename вида <host>.access.log позволяет точно определить хост
+                expression: '^.*/(?P<virtual_host>[\w\.]+)\.access\.log$'
+            - regex:
+                # logline example: 127.0.0.1 - - [21/Apr/2020:13:59:45 +0000] "GET /?foo=bar HTTP/1.1" 200 612 "http://example.com/lekkebot.html" "curl/7.58.0"
+                expression: '^(?P<ip>[\w\.]+) - (?P<user>[^ ]*) \[(?P<timestamp>.*)\] "(?P<method>[^ ]*) (?P<request_url>[^ ]*) (?P<request_http_protocol>[^ ]*)" (?P<status>[\d]+) (?P<bytes_out>[\d]+) "(?P<http_referer>[^"]*)" "(?P<user_agent>[^"]*)"?'
+            - regex:
+                source: request_url
+                expression: '^.+\.(?P<static_type>jpg|jpeg|gif|png|ico|css|zip|tgz|gz|rar|bz2|pdf|txt|tar|wav|bmp|rtf|js|flv|swf|html|htm)$'
+            - regex:
+                source: request_url
+                expression: "^/photos/(?P<photo_name>.+)$"
+            - template: # для найденной статики и фото выставим тип
+                source: request_type
+                template: '{{if .static_type}}static{{end}}{{if .photo_name}}photo{{end}}'
+            - labels:
+                ip:
+                status:
+                virtual_host:
+                static_type:
+                request_type:
+      # все что не статика и не фото
+      - match:
+          selector: '{request_type="unknown"}'
+          stages:
+            - regex:
+                source: request_url
+                expression: "(?P<entry_point>^.+$)"
+            - template:
+                source: request_type
+                template: 'entry_point'
+            - labels:
+                request:
+                request_type:

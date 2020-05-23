@@ -1,0 +1,81 @@
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+  log_level: "error"
+positions:
+  filename: /var/lib/promtail/postions/positions.yaml
+client:
+  url: http://loki:3100/api/prom/push
+scrape_configs:
+  - job_name: nginx
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          host: localhost # where from
+          app: nginx # application
+          source: nginx.log # source
+          source_type: nginx.access.log # type of source
+          request_type: unknown
+          __path__: /var/log/nginx/*.access.log
+    pipeline_stages:
+      - match:
+          selector: '{app="nginx"}'
+          stages:
+            - regex:
+                source: filename # filename вида <host>.access.log позволяет точно определить хост
+                expression: '^.*/(?P<virtual_host>[\w\.]+)\.access\.log$'
+            - regex:
+                expression: '^(?P<ip>[\w\.]+) - (?P<user>[^ ]*) \[(?P<timestamp>[^ ]+).*\] "(?P<method>[^ ]*) (?P<request_url>[^ ]*) (?P<request_http_protocol>[^ ]*)" (?P<status>[\d]+) (?P<bytes_out>[\d]+) "(?P<http_referer>[^"]*)" "(?P<user_agent>[^"]*)" "(?P<response_time>[\d\.]+)"?'
+            - regex:
+                source: request_url
+                expression: '^.+\.(?P<static_type>jpg|jpeg|gif|png|ico|css|zip|tgz|gz|rar|bz2|pdf|txt|tar|wav|bmp|rtf|js|flv|swf|html|htm)$'
+            - regex:
+                source: request_url
+                expression: '^/photo/(?P<photo_name>.+)$'
+            - template: # для найденной статики и фото выставим тип
+                source: request_type
+                template: '{{if .static_type}}static{{end}}{{if .photo_name}}photo{{end}}'
+            - labels:
+                status:
+                virtual_host:
+                static_type:
+                request_type:
+            - timestamp:
+                source: timestamp
+                format: '02/Jan/2006:15:04:05'
+      # все что не статика и не фото
+      - match:
+          selector: '{request_type="unknown"}'
+          stages:
+            - regex:
+                source: request_url
+                expression: "^/(?P<request>[^/]+).*$"
+            - template:
+                source: request_type
+                template: 'entry_point'
+            - labels:
+                request:
+                request_type:
+      - match:
+          selector: '{app="nginx"}'
+          stages:
+            - metrics:
+                http_nginx_response_time:
+                  type: Histogram
+                  description: "response time ms"
+                  source: response_time
+                  config:
+                    buckets: [0.010,0.050,0.100,0.200,0.500,1.0]
+                http_nginx_response_bytes_sum:
+                  type: Counter
+                  description: "response bytes sum"
+                  source: bytes_out
+                  config:
+                    action: add
+                http_nginx_response_bytes_count:
+                  type: Counter
+                  description: "response bytes count"
+                  source: bytes_out
+                  config:
+                    action: inc
