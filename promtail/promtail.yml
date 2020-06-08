@@ -12,15 +12,11 @@ scrape_configs:
       - targets:
           - localhost
         labels:
-          host: localhost # where from
-          app: nginx # application
-          source: nginx.log # source
-          source_type: nginx.access.log # type of source
-          request_type: unknown
+          job: nginx # application
           __path__: /var/log/nginx/*.access.log
     pipeline_stages:
       - match:
-          selector: '{app="nginx"}'
+          selector: '{job="nginx"}'
           stages:
             - regex:
                 source: filename # filename вида <host>.access.log позволяет точно определить хост

@@ -22,7 +22,7 @@ services:
       prober.net:
   proxy:
     build:
-      context: ./proxy/src
+      context: ./proxy/src/proxy
     ports:
       - "80:80"
       - "443:443"

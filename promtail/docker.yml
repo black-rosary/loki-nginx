@@ -15,7 +15,7 @@ scrape_configs:
           - localhost
         labels:
           job: containerlogs
-          __path__: /var/lib/docker/containers/*/*log
+          __path__: /var/lib/docker/containers/*/*log # For linux only
 
     # ### waiting the next settings in logging
     #    logging:
@@ -68,6 +68,9 @@ scrape_configs:
             - regex:
                 source: request_url
                 expression: ^/(?P<request>[^/]+).*$
+            - template:
+                source: request
+                template: "{{if .static_type}}{{else}}{{.request}}{{end}}"
             - labels:
                 request:
                 virtual_host:
@@ -75,7 +78,7 @@ scrape_configs:
             - output:
                 source: logrow
       - match:
-          selector: '{virtual_host!="",request!=""}'
+          selector: '{virtual_host!="",request_type!=""}'
           stages:
             - metrics:
                 http_nginx_response_time:

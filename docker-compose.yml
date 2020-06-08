@@ -81,7 +81,7 @@ services:
       - GF_SECURITY_ADMIN_USER=${ADMIN_USER:-admin}
       - GF_SECURITY_ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin}
       - GF_USERS_ALLOW_SIGN_UP=false
-      - VIRTUAL_HOST=grafana.develop.lebedev-studio.com
+      - VIRTUAL_HOST=monitoring.grafana
       - NETWORK_ACCESS=internal
       - VIRTUAL_PORT=3000
     restart: unless-stopped
@@ -145,19 +145,19 @@ services:
     labels:
       org.label-schema.group: "monitoring"
 
-  lebotic:
-    container_name: monitoring.lebotic
-    build: ./lebotic
-    restart: unless-stopped
-    environment:
-      - LEBOTIC_TELEGRAM_CHAT_ID=${LEBOTIC_TELEGRAM_CHAT_ID}
-      - LEBOTIC_TELEGRAM_TOKEN=${LEBOTIC_TELEGRAM_TOKEN}
-    ports:
-      - "8619:8619"
-    networks:
-      - monitoring.network
-    labels:
-      org.label-schema.group: "monitoring"
+#  lebotic:
+#    container_name: monitoring.lebotic
+#    build: ./lebotic
+#    restart: unless-stopped
+#    environment:
+#      - LEBOTIC_TELEGRAM_CHAT_ID=${LEBOTIC_TELEGRAM_CHAT_ID}
+#      - LEBOTIC_TELEGRAM_TOKEN=${LEBOTIC_TELEGRAM_TOKEN}
+#    ports:
+#      - "8619:8619"
+#    networks:
+#      - monitoring.network
+#    labels:
+#      org.label-schema.group: "monitoring"
 
 networks:
   monitoring.network:
