@@ -1,0 +1,64 @@
+# - endpoint: "/photo" - serviced endpoint
+#    status: 200 - http status, 200 by default
+#    size: 100 - size in bytes. you can define random value from m..n, example 100..200
+#    time: 100 - time in milliseconds you can define random value from m..n, example 100..200
+#    wight: 1 - how often will be requested
+endpoints:
+  # statuses
+  - endpoint: "/200"
+    status: 200
+    weight: 100
+  - endpoint: "/301"
+    status: 301
+    weight: 2
+  - endpoint: "/400"
+    status: 400
+    weight: 1
+  - endpoint: "/404"
+    status: 404
+    weight: 5
+  - endpoint: "/500"
+    status: 500
+    weight: 2
+  - endpoint: "/502"
+    status: 502
+    weight: 1
+  #static
+  - endpoint: "/css/main.css"
+    size: 100..500
+    weight: 50
+  - endpoint: "/js/logic.js"
+    size: 645
+    weight: 20
+  - endpoint: "/js/additional.js"
+    size: 200..600
+    weight: 20
+  - endpoint: "/img/logo.png"
+    size: 500..1000
+    weight: 20
+  - endpoint: "/img/not_found.jpg"
+    status: 404
+    weight: 5
+  #photo
+  - endpoint: "/photo/a1"
+    size: 0..1000
+    weight: 10
+  - endpoint: "/photo/a2"
+    size: 0..1000
+    weight: 10
+  - endpoint: "/photo/a3"
+    status: 404
+    weight: 1
+  # api
+  - endpoint: "/index"
+    time: 0..500
+    weight: 50
+  - endpoint: "/registration"
+    time: 0..500
+    weight: 20
+  - endpoint: "/login"
+    time: 0..500
+    weight: 50
+  - endpoint: "/very_slow"
+    time: 500..1000
+    weight: 5
