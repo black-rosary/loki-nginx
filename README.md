@@ -1,11 +1,11 @@
 
 Small environment for testing parsing nginx logs by promtail.  
 
-###### Install
+### Install
 
 docker-compose up 
 
-###### Usage
+### Usage
 
 Contains:
 
