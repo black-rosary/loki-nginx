@@ -1,0 +1,54 @@
+
+urls:
+  - url: http://nginx.test/200 # url
+    weight: 200 # weight
+  - url: http://nginx.test/500
+    weight: 2
+  - url: http://nginx.test/400
+    weight: 1
+  - url: http://nginx.test/404
+    weight: 5
+  - url: http://nginx.test/502
+    weight: 2
+  - url: http://nginx.test/css/main.css
+    weight: 100
+  - url: http://nginx.test/js/logic.js
+    weight: 75
+  - url: http://nginx.test/img/logo.png
+    weight: 50
+  - url: http://nginx.test/img/not_found.jpg
+    weight: 2
+  - url: http://nginx.test/photo/a1
+    weight: 100
+  - url: http://nginx.test/photo/a2
+    weight: 100
+  - url: http://nginx.test/photo/a3
+    weight: 2
+  - url: http://nginx.test/index
+    weight: 200
+  - url: http://nginx.test/registration
+    weight: 20
+  - url: http://nginx.test/login
+    weight: 50
+  - url: http://nginx.test/very_slow
+    weight: 5
+
+    ###{"http://nginx.test/200", 200},
+    #	{"http://nginx.test/500", 2},
+    #	{"http://nginx.test/400", 1},
+    #	{"http://nginx.test/404", 5},
+    #	{"http://nginx.test/502", 2},
+    #
+    #	{"http://nginx.test/css/main.css", 100},
+    #	{"http://nginx.test/js/logic.js", 75},
+    #	{"http://nginx.test/img/logo.png", 50},
+    #	{"http://nginx.test/img/not_found.jpg", 2},
+    #
+    #	{"http://nginx.test/photo/a1", 100},
+    #	{"http://nginx.test/photo/a2", 100},
+    #	{"http://nginx.test/photo/a3", 2},
+    #
+    #	{"http://nginx.test/index", 50},
+    #	{"http://nginx.test/registration", 20},
+    #	{"http://nginx.test/login", 50},
+    #	{"http://nginx.test/very_slow", 5},

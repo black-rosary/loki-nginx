@@ -1,4 +1,6 @@
 !.gitkeep
+/prober/prober/vendor
+/prober/backyard/vendor
 /prober/logs/*
 .idea
 /lebotic/src/vendor

@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"gopkg.in/yaml.v2"
+	"io/ioutil"
 	"log"
 	"math/rand"
 	"net/http"
@@ -9,41 +11,22 @@ import (
 )
 
 type Link struct {
-	link string
-	probabilty int
+	Url  string `yaml:"url"`
+	Prob int `yaml:"weight"`
 }
 
-var links = []Link{
-	{"http://nginx.test/200", 200},
-	{"http://nginx.test/500", 2},
-	{"http://nginx.test/400", 1},
-	{"http://nginx.test/404", 5},
-	{"http://nginx.test/502", 2},
-
-	{"http://nginx.test/css/main.css", 100},
-	{"http://nginx.test/js/logic.js", 75},
-	{"http://nginx.test/img/logo.png", 50},
-	{"http://nginx.test/img/not_found.jpg", 2},
-
-	{"http://nginx.test/photo/a1", 100},
-	{"http://nginx.test/photo/a2", 100},
-	{"http://nginx.test/photo/a3", 2},
-
-	{"http://nginx.test/index", 50},
-	{"http://nginx.test/registration", 20},
-	{"http://nginx.test/login", 50},
-	{"http://nginx.test/very_slow", 5},
+type conf struct {
+	Urls []Link `yaml:"urls"`
 }
 
-
-func selectLinkByProbabilty() Link {
+func selectLinkByProbability(links []Link) Link {
 	var sum, prob, trshld = 0, 0, 0
 	for i := 0; i < len(links); i++ {
-		sum += links[i].probabilty
+		sum += links[i].Prob
 	}
 	trshld = rand.Intn(sum)
 	for i := 0; i < len(links); i++ {
-		prob += links[i].probabilty
+		prob += links[i].Prob
 		if prob > trshld {
 			return links[i]
 		}
@@ -52,7 +35,7 @@ func selectLinkByProbabilty() Link {
 }
 
 func requestSomething(url string) {
-	time.Sleep(time.Duration(rand.Intn(100)) * time.Millisecond)
+	time.Sleep(time.Duration(500 + rand.Intn(500)) * time.Millisecond)
 
 	client := &http.Client{}
 
@@ -61,7 +44,7 @@ func requestSomething(url string) {
 		log.Fatalln(err)
 	}
 
-	req.Header.Set("User-Agent", "Stub_Bot/3.0")
+	req.Header.Set("User-Agent", "Stub_Bot/0.1")
 
 	resp, err := client.Do(req)
 
@@ -69,20 +52,39 @@ func requestSomething(url string) {
 
 	if err != nil {
 		fmt.Printf("FAILED %s  \n", url)
-	} else {
-		fmt.Printf("OK %s \n", url)
 	}
 }
 
-func main() {
+func getConf() (*conf, error) {
+	c := &conf{}
+	yamlFile, err := ioutil.ReadFile("conf.yaml")
+	if err != nil {
+		return nil, err
+	}
+	err = yaml.Unmarshal(yamlFile, c)
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
+}
 
+func main() {
 	rand.Seed(time.Now().UTC().UnixNano())
 
+	c, err := getConf()
+	if err != nil {
+		log.Fatal("Error ", err)
+	}
+
+	maxGoroutines := 5
+	guard := make(chan struct{}, maxGoroutines)
+
 	for {
-		for i := 0; i < rand.Intn(20); i++ {
-			s := selectLinkByProbabilty()
-			go requestSomething(s.link)
-		}
-		time.Sleep(time.Duration(763) * time.Millisecond)
+		guard <- struct{}{}
+		s := selectLinkByProbability(c.Urls)
+		go func(url string) {
+			requestSomething(url)
+			<-guard
+		}(s.Url)
 	}
 }

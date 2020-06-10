@@ -13,7 +13,7 @@ groups:
 - name: host
   rules:
   - alert: high_cpu_load
-    expr: node_load1 > 10
+    expr: node_load1 > 0.01
     for: 30s
     labels:
       severity: warning

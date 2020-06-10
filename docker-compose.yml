@@ -17,8 +17,8 @@ services:
       - '--storage.tsdb.retention.time=14d'
       - '--web.enable-lifecycle'
       - '--storage.tsdb.wal-compression'
-      - '--storage.tsdb.max-block-duration=1h'
-      - '--storage.tsdb.wal-segment-size=20MB'
+      - '--storage.tsdb.max-block-duration=4h'
+      - '--storage.tsdb.wal-segment-size=60MB'
       - '--storage.tsdb.allow-overlapping-blocks'
       - '--query.max-samples=5000000'
     restart: unless-stopped
@@ -30,7 +30,7 @@ services:
       org.label-schema.group: "monitoring"
 
   nodeexporter:
-    image: prom/node-exporter:v0.18.1
+    image: prom/node-exporter:${NODE_EXPORTER_VERSION}
     container_name: monitoring.nodeexporter
     volumes:
       - /proc:/host/proc:ro
@@ -50,7 +50,7 @@ services:
       org.label-schema.group: "monitoring"
 
   cadvisor:
-    image: gcr.io/google-containers/cadvisor:v0.36.0
+    image: gcr.io/google-containers/cadvisor:${CADVISER_VERSION}
     container_name: monitoring.cadvisor
     volumes:
       - /:/rootfs:ro
@@ -103,9 +103,9 @@ services:
       - "9080:9080"
     volumes:
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
-      - promtail-data:/var/lib/promtail/postions
+      - promtail-data:/var/lib/promtail/positions
       - ${PWD}/prober/logs:/var/log/nginx
-      - ${PWD}/promtail/docker.yml:/etc/promtail/promtail.yml
+      - ${PWD}/promtail/promtail.yml:/etc/promtail/promtail.yml
     command:
       - '-config.file=/etc/promtail/promtail.yml'
     restart: unless-stopped
@@ -144,20 +144,6 @@ services:
       - monitoring.network
     labels:
       org.label-schema.group: "monitoring"
-
-#  lebotic:
-#    container_name: monitoring.lebotic
-#    build: ./lebotic
-#    restart: unless-stopped
-#    environment:
-#      - LEBOTIC_TELEGRAM_CHAT_ID=${LEBOTIC_TELEGRAM_CHAT_ID}
-#      - LEBOTIC_TELEGRAM_TOKEN=${LEBOTIC_TELEGRAM_TOKEN}
-#    ports:
-#      - "8619:8619"
-#    networks:
-#      - monitoring.network
-#    labels:
-#      org.label-schema.group: "monitoring"
 
 networks:
   monitoring.network:
