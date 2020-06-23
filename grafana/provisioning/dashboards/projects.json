@@ -18,7 +18,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 2,
-  "iteration": 1592150723026,
+  "iteration": 1592956283025,
   "links": [],
   "panels": [
     {
@@ -235,26 +235,26 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "histogram_quantile(0.95, sum(rate(promtail_custom_http_nginx_response_time_bucket{virtual_host=\"$vhost\"}[5m])) by (le))",
+          "expr": "histogram_quantile(0.95, sum(rate(promtail_custom_http_nginx_response_time_bucket{virtual_host=\"$vhost\"}[30s])) by (le))",
           "interval": "",
           "intervalFactor": 1,
           "legendFormat": "95 percentile",
           "refId": "A"
         },
         {
-          "expr": "histogram_quantile(0.75, sum(rate(promtail_custom_http_nginx_response_time_bucket{virtual_host=\"$vhost\"}[5m])) by (le))",
+          "expr": "histogram_quantile(0.75, sum(rate(promtail_custom_http_nginx_response_time_bucket{virtual_host=\"$vhost\"}[30s])) by (le))",
           "interval": "",
           "legendFormat": "75 percentile",
           "refId": "B"
         },
         {
-          "expr": "histogram_quantile(0.5, sum(rate(promtail_custom_http_nginx_response_time_bucket{virtual_host=\"$vhost\"}[5m])) by (le))",
+          "expr": "histogram_quantile(0.5, sum(rate(promtail_custom_http_nginx_response_time_bucket{virtual_host=\"$vhost\"}[30s])) by (le))",
           "interval": "",
           "legendFormat": "median",
           "refId": "E"
         },
         {
-          "expr": "histogram_quantile(0.25, sum(rate(promtail_custom_http_nginx_response_time_bucket{virtual_host=\"$vhost\"}[5m])) by (le))",
+          "expr": "histogram_quantile(0.25, sum(rate(promtail_custom_http_nginx_response_time_bucket{virtual_host=\"$vhost\"}[30s])) by (le))",
           "interval": "",
           "legendFormat": "25 percentile",
           "refId": "C"
@@ -451,7 +451,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "topk(4, sum(increase(promtail_custom_http_nginx_response_time_sum{virtual_host=\"$vhost\",request_type=\"api\"}[20s]) / increase(promtail_custom_http_nginx_response_time_count{virtual_host=\"$vhost\",request_type=\"api\"}[20s])) by (api_request))",
+          "expr": "topk(4, sum(increase(promtail_custom_http_nginx_response_time_sum{virtual_host=\"$vhost\",request_type=\"api\"}[30s]) / increase(promtail_custom_http_nginx_response_time_count{virtual_host=\"$vhost\",request_type=\"api\"}[30s])) by (api_request))",
           "interval": "",
           "legendFormat": "{{api_request}}",
           "refId": "B"
@@ -559,5 +559,5 @@
   "variables": {
     "list": []
   },
-  "version": 3
+  "version": 1
 }
