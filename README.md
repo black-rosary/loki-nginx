@@ -13,7 +13,7 @@ Contains:
 2. Grafana - for graphs
 3. Loki - for logs
 4. Promtail - for logs delivery
-5-6. Prober - nginx and small daemon who requests itself for generating logs.
+5. Prober - nginx and small daemon who requests itself for generating logs.
 
 Prober starts generating logs immediately. You can change its options by modifying conf.yaml.
 Conf.yaml defines all possible entry points and what http status, response size, response time they will have
