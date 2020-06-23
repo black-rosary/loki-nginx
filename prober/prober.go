@@ -93,7 +93,7 @@ func main() {
 
 	RunBackyard(port, c.Endpoints)
 
-	maxGoroutines := 8
+	maxGoroutines := 16
 	guard := make(chan struct{}, maxGoroutines)
 
 	for {

@@ -17,8 +17,8 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 6,
-  "iteration": 1590182327217,
+  "id": 2,
+  "iteration": 1592150723026,
   "links": [],
   "panels": [
     {
@@ -437,7 +437,7 @@
       },
       "lines": true,
       "linewidth": 1,
-      "nullPointMode": "null",
+      "nullPointMode": "null as zero",
       "options": {
         "dataLinks": []
       },
@@ -451,9 +451,9 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "topk(4, sum(increase(promtail_custom_http_nginx_response_time_sum{virtual_host=\"$vhost\",request!=\"\"}[10m]) / increase(promtail_custom_http_nginx_response_time_count{virtual_host=\"$vhost\",request!=\"\"}[10m])) by (request))",
+          "expr": "topk(4, sum(increase(promtail_custom_http_nginx_response_time_sum{virtual_host=\"$vhost\",request_type=\"api\"}[20s]) / increase(promtail_custom_http_nginx_response_time_count{virtual_host=\"$vhost\",request_type=\"api\"}[20s])) by (api_request))",
           "interval": "",
-          "legendFormat": "{{request}}",
+          "legendFormat": "{{api_request}}",
           "refId": "B"
         }
       ],
@@ -510,7 +510,6 @@
       {
         "allValue": null,
         "current": {
-          "tags": [],
           "text": "nginx.test",
           "value": "nginx.test"
         },
@@ -560,5 +559,5 @@
   "variables": {
     "list": []
   },
-  "version": 37
+  "version": 3
 }

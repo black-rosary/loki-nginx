@@ -40,25 +40,25 @@ endpoints:
     status: 404
     weight: 5
   #photo
-  - endpoint: "/photo/a1"
-    size: 0..1000
+  - endpoint: "/photo/a1.jpg"
+    size: 0..10000
     weight: 10
-  - endpoint: "/photo/a2"
-    size: 0..1000
+  - endpoint: "/photo/a2.jpg"
+    size: 0..10000
     weight: 10
-  - endpoint: "/photo/a3"
+  - endpoint: "/photo/a3.jpg"
     status: 404
     weight: 1
   # api
-  - endpoint: "/index"
+  - endpoint: "/api/index"
     time: 0..500
     weight: 50
-  - endpoint: "/registration"
+  - endpoint: "/api/registration"
     time: 0..500
     weight: 20
-  - endpoint: "/login"
+  - endpoint: "/api/login"
     time: 0..500
     weight: 50
-  - endpoint: "/very_slow"
+  - endpoint: "/api/very_slow"
     time: 500..1000
     weight: 5

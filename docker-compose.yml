@@ -80,7 +80,7 @@ services:
       - NETWORK_ACCESS=internal
       - VIRTUAL_PORT=8082
     networks:
-      prober.net:
+      monitoring.network:
 
   proxy:
     container_name: proxy.prober
@@ -88,21 +88,20 @@ services:
       context: ${PWD}/proxy/src/proxy
     ports:
       - "80:80"
-      - "443:443"
-    image: nginx.test.v3 # define image name
+    image: nginx.promtail.test # define image name
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
       - ${PWD}/proxy/certs:/etc/nginx/certs
       - ${PWD}/proxy/vhost.d:/etc/nginx/vhost.d
       - ${PWD}/proxy/html:/usr/share/nginx/html
     networks:
-      prober.net:
+      monitoring.network:
         aliases:
           - nginx.test
     logging:
       driver: "json-file"
       options:
-        max-size: "200k"
+        max-size: "100m"
         max-file: "10"
         tag: "{{.ImageName}}|{{.Name}}"
 
@@ -143,7 +142,6 @@ services:
     volumes:
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
       - promtail-data:/var/lib/promtail/positions
-      - ${PWD}/prober/logs:/var/log/nginx
       - ${PWD}/promtail/promtail.yml:/etc/promtail/promtail.yml
     command:
       - '-config.file=/etc/promtail/promtail.yml'
@@ -158,6 +156,8 @@ services:
     image: grafana/loki:${LOKI_VERSION}
     expose:
       - 3100
+    ports:
+      - "3100:3100"
     volumes:
       - ${PWD}/loki/loki-config.yml:/etc/loki-config.yml
       - loki-data:/tmp/loki/
@@ -172,7 +172,6 @@ networks:
   monitoring.network:
     ipam:
       driver: default
-  prober.net:
 
 volumes:
   prometheus-data: {}
