@@ -3,7 +3,7 @@ version: '3.7'
 services:
 
   prometheus:
-    image: prom/prometheus:${PROMETHEUS_VESRION}
+    image: prom/prometheus:${PROMETHEUS_VERSION}
     container_name: monitoring.prometheus
     volumes:
       - ${PWD}/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml

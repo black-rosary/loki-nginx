@@ -8,7 +8,6 @@ client:
   url: http://loki:3100/api/prom/push
 scrape_configs:
   - job_name: containers
-    entry_parser: raw
 
     static_configs:
       - targets:

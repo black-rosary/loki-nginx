@@ -19,7 +19,7 @@ scrape_configs:
           selector: '{job="nginx"}'
           stages:
             - regex:
-                source: filename # filename вида <host>.access.log позволяет точно определить хост
+                source: filename # filename kind of <host>.access.log for detecting host name
                 expression: '^.*/(?P<virtual_host>[\w\.]+)\.access\.log$'
             - labels:
                 virtual_host:
